@@ -34,18 +34,21 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
 	num_particles = 100; //start with 100.Later maybe adjusted
 	
 	//set length of weights to num_particles
-	weights.resize(100, 1.0);
+	weights.resize(num_particles);
 
 	//reserve length of particles to num_particles
-	particles.reserve(num_particles);
+	particles.resize(num_particles);
 
 	// Use a psedo random number generator
 	default_random_engine gen;
 
-	//Generate 100 particles,add noise and weights
+	//Generate num_particles particles,add noise and weights
 	for (int ii = 0; ii < num_particles; ++ii)
 	{
-		
+		particles.at(ii).x = dist_x(gen);
+		particles.at(ii).y = dist_y(gen);
+		particles.at(ii).theta = dist_theta(gen);
+		particles.at(ii).weight = 1.0;
 	}
 
 
