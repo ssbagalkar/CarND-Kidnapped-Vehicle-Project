@@ -51,7 +51,8 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
 		particles.at(ii).weight = 1.0;
 	}
 
-
+// set initialized flag to true
+	is_initialized = true;
 
 }
 
