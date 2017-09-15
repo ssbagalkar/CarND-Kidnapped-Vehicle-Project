@@ -62,6 +62,26 @@ void ParticleFilter::prediction(double delta_t, double std_pos[], double velocit
 	//  http://en.cppreference.com/w/cpp/numeric/random/normal_distribution
 	//  http://www.cplusplus.com/reference/random/default_random_engine/
 
+	// depending if yaw rate is zero,use different set of equations to predict the x,y positions
+	// and heading angle which is yaw angle theta
+	for (int ii = 0; ii < num_particles; ++ii) {
+		if (yaw_rate != 0)
+		{
+			//x_pred = x_prev + velocity * delta_t * cos (theta)
+			particles.at(ii).x = particles.at(ii).x + (velocity * delta_t * cos(particles.at(ii).theta)) ;
+
+			//y_pred = x_prev + velocity * delta_t * sin (theta)
+			particles.at(ii).y = particles.at(ii).y + (velocity * delta_t * sin(particles.at(ii).theta));
+
+			//theta_pred = theta_prev.So,no need to change the equation
+		}
+		else
+		{
+
+		}
+	}
+	
+	
 }
 
 void ParticleFilter::dataAssociation(std::vector<LandmarkObs> predicted, std::vector<LandmarkObs>& observations) {
