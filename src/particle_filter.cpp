@@ -90,8 +90,35 @@ void ParticleFilter::prediction(double delta_t, double std_pos[], double velocit
 
 			//theta_pred = theta_prev.So,no need to change the equation
 		}
+		// if yaw rate is not equal to 0
 		else
 		{
+			// x_pred = x_prev + velocity * delta_t * cos (theta)
+			double x_pred = particles.at(ii).x + (velocity/yaw_rate)*(sin((particles.at(ii).theta) + (yaw_rate * delta_t)) - (sin(particles.at(ii).theta)));
+
+			// add random gaussian noise for x position
+			normal_distribution <double> dist_x_pred(x_pred, std_pos[0]);
+
+			// assign the predicted measurement to x position with added random gaussian noise
+			particles.at(ii).x = dist_x_pred(gen);
+
+			// y_pred = x_prev + velocity * delta_t * sin (theta)
+			double y_pred = particles.at(ii).y + (velocity / yaw_rate)*((cos(particles.at(ii).theta)) - (cos(particles.at(ii).theta + (yaw_rate * delta_t))));
+
+			// add random gaussian noise for x position
+			normal_distribution <double> dist_y_pred(y_pred, std_pos[1]);
+
+			// assign the predicted measurement to x position with added random gaussian noise
+			particles.at(ii).y = dist_y_pred(gen);
+
+			// theta_pred = theta_prev + yaw_rate * delta_t
+			double theta_pred = particles.at(ii).theta + ((yaw_rate * delta_t));
+
+			// add random gaussian noise for theta 
+			normal_distribution <double> dist_theta_pred(theta_pred, std_pos[2]);
+
+			// assign the predicted measurement to x position with added random gaussian noise
+			particles.at(ii).theta = dist_theta_pred(gen);
 
 		}
 	}
