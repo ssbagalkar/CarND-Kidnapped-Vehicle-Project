@@ -38,6 +38,7 @@ class ParticleFilter {
 	// Vector of weights of all particles
 	std::vector<double> weights;
 	
+	
 public:
 	
 	// Set of current particles

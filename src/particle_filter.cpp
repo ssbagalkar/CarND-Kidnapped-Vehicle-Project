@@ -33,9 +33,20 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
 	//decide on number of particles
 	num_particles = 100; //start with 100.Later maybe adjusted
 	
+	//set length of weights to num_particles
+	weights.resize(100, 1.0);
+
+	//reserve length of particles to num_particles
+	particles.reserve(num_particles);
+
 	// Use a psedo random number generator
 	default_random_engine gen;
-	//add gaussian random noise, which contributes as sensor noise
+
+	//Generate 100 particles,add noise and weights
+	for (int ii = 0; ii < num_particles; ++ii)
+	{
+		
+	}
 
 
 
