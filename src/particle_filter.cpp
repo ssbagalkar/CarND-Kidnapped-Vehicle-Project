@@ -148,7 +148,7 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
 	//   http://planning.cs.uiuc.edu/node99.html
 
 	// Perform data association to associate each sensor measurement with a particular landmark index
-	
+	double min_dist = 1000000;
 	for (int ii = 0; ii < num_particles; ++ii)
 	{
 
@@ -170,15 +170,17 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
 			{
 
 				// Calculate euclidean distance between each landmark pos and sensor pos
-
+				double dist_euclid = sqrt(pow(map_landmarks.landmark_list[landmarkCount].x_f - observations[sensorCount].x, 2) + pow(map_landmarks.landmark_list[landmarkCount].y_f - observations[sensorCount].y, 2));
 
 
 				// if this distance is less than min distance,associate current particle with that landmark index
-
+					if (dist_euclid < min_dist)
+					{
+						min_dist = dist_euclid;
+						particles.at(ii).id = map_landmarks.landmark_list[landmarkCount].id_i;
+					}
 
 			}
-
-
 
 		}
 
