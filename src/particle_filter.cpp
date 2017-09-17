@@ -126,13 +126,61 @@ void ParticleFilter::prediction(double delta_t, double std_pos[], double velocit
 	
 }
 
-void ParticleFilter::dataAssociation(std::vector<LandmarkObs> predicted, std::vector<LandmarkObs>& observations) {
-	// TODO: Find the predicted measurement that is closest to each observed measurement and assign the 
-	//   observed measurement to this particular landmark.
-	// NOTE: this method will NOT be called by the grading code. But you will probably find it useful to 
-	//   implement this method and use it as a helper during the updateWeights phase.
+//void ParticleFilter::dataAssociation(std::vector<LandmarkObs> predicted, std::vector<LandmarkObs>& observations) {
+//	// TODO: Find the predicted measurement that is closest to each observed measurement and assign the 
+//	//   observed measurement to this particular landmark.
+//	// NOTE: this method will NOT be called by the grading code. But you will probably find it useful to 
+//	//   implement this method and use it as a helper during the updateWeights phase.
+//
+//}
 
+void ParticleFilter::dataAssociation(std::vector<LandmarkObs> predicted, std::vector<LandmarkObs>& observations, Map map_landmarks)
+{
+
+	for (int sensorCount = 0; sensorCount < observations.size(); ++sensorCount)
+	{
+		double min_dist = INFINITY;
+		// transform each sensor measurement ,which is in local(car) coordinates to global(map) coordinates
+		/*
+		Equation to transform car coordinates to map coordinates
+		|Xmap| = |cos(theta)  -sin(theta)   Xparticle |      | Xcar |
+		|Ymap| = |sin(theta)   cos(theta)   Yparticle |   X  | Ycar |
+		|  1 | = |    0             0            1    |      |   1  |
+
+		*/
+		//// use above equation for each sensor
+		//observations[sensorCount].x = particles.at(ii).x + (cos(particles.at(ii).theta) * (observations[sensorCount].x)) - (sin(particles.at(ii).theta) * (observations[sensorCount].y));
+		//observations[sensorCount].y = particles.at(ii).y + (sin(particles.at(ii).theta) * (observations[sensorCount].x)) + (cos(particles.at(ii).theta) * (observations[sensorCount].y));
+
+		for (int landmarkCount = 0; landmarkCount < map_landmarks.landmark_list.size(); ++landmarkCount)
+		{
+
+			// Calculate euclidean distance between each landmark pos and sensor pos
+			double dist_euclid = sqrt(pow(map_landmarks.landmark_list[landmarkCount].x_f - observations[sensorCount].x, 2) + pow(map_landmarks.landmark_list[landmarkCount].y_f - observations[sensorCount].y, 2));
+
+
+			// if this distance is less than min distance,associate current particle with that landmark index
+			if (dist_euclid < min_dist)
+				// change the min distance to calculated euclidean distance  
+				dist_euclid = min_dist;
+				
+				// add the landmark index to predicted vector id
+				observations[sensorCount].id = map_landmarks.landmark_list[landmarkCount].id_i;
+
+				// now add the sensor measurement with its associated id to predicted vector
+				predicted.push_back(observations[sensorCount]);
+
+		}
+	}
 }
+
+
+
+
+
+
+
+
 
 void ParticleFilter::updateWeights(double sensor_range, double std_landmark[], 
 		std::vector<LandmarkObs> observations, Map map_landmarks) {
@@ -148,43 +196,46 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
 	//   http://planning.cs.uiuc.edu/node99.html
 
 	// Perform data association to associate each sensor measurement with a particular landmark index
-	double min_dist = 1000000;
+	
 	for (int ii = 0; ii < num_particles; ++ii)
 	{
 
-		for (int sensorCount = 0; sensorCount < observations.size(); ++sensorCount)
-		{
-			// transform each sensor measurement ,which is in local(car) coordinates to global(map) coordinates
-			/*
-			Equation to transform car coordinates to map coordinates
-			|Xmap| = |cos(theta)  -sin(theta)   Xparticle |      | Xcar |
-			|Ymap| = |sin(theta)   cos(theta)   Yparticle |   X  | Ycar |
-			|  1 | = |    0             0            1    |      |   1  |
-			
-			*/
-			// use above equation for each sensor
-			observations[sensorCount].x = particles.at(ii).x + (cos(particles.at(ii).theta) * (observations[sensorCount].x)) - (sin(particles.at(ii).theta) * (observations[sensorCount].y));
-			observations[sensorCount].y = particles.at(ii).y + (sin(particles.at(ii).theta) * (observations[sensorCount].x)) + (cos(particles.at(ii).theta) * (observations[sensorCount].y));
+		//for (int sensorCount = 0; sensorCount < observations.size(); ++sensorCount)
+		//{
+		//	double min_dist = 1000000;
+		//	// transform each sensor measurement ,which is in local(car) coordinates to global(map) coordinates
+		//	/*
+		//	Equation to transform car coordinates to map coordinates
+		//	|Xmap| = |cos(theta)  -sin(theta)   Xparticle |      | Xcar |
+		//	|Ymap| = |sin(theta)   cos(theta)   Yparticle |   X  | Ycar |
+		//	|  1 | = |    0             0            1    |      |   1  |
+		//	
+		//	*/
+		//	// use above equation for each sensor
+		//	observations[sensorCount].x = particles.at(ii).x + (cos(particles.at(ii).theta) * (observations[sensorCount].x)) - (sin(particles.at(ii).theta) * (observations[sensorCount].y));
+		//	observations[sensorCount].y = particles.at(ii).y + (sin(particles.at(ii).theta) * (observations[sensorCount].x)) + (cos(particles.at(ii).theta) * (observations[sensorCount].y));
 
-			for (int landmarkCount = 0; landmarkCount < map_landmarks.landmark_list.size(); ++landmarkCount)
-			{
+		//	for (int landmarkCount = 0; landmarkCount < map_landmarks.landmark_list.size(); ++landmarkCount)
+		//	{
 
-				// Calculate euclidean distance between each landmark pos and sensor pos
-				double dist_euclid = sqrt(pow(map_landmarks.landmark_list[landmarkCount].x_f - observations[sensorCount].x, 2) + pow(map_landmarks.landmark_list[landmarkCount].y_f - observations[sensorCount].y, 2));
+		//		// Calculate euclidean distance between each landmark pos and sensor pos
+		//		double dist_euclid = sqrt(pow(map_landmarks.landmark_list[landmarkCount].x_f - observations[sensorCount].x, 2) + pow(map_landmarks.landmark_list[landmarkCount].y_f - observations[sensorCount].y, 2));
+		//		
 
+		//		// if this distance is less than min distance,associate current particle with that landmark index
+		//			if (dist_euclid < min_dist)
+		//			{
+		//				min_dist = dist_euclid;
+		//				particles.at(ii).id = map_landmarks.landmark_list[landmarkCount].id_i;
+		//				particles.at(ii).x = map_landmarks.landmark_list[landmarkCount].x_f;
+		//				particles.at(ii).y = map_landmarks.landmark_list[landmarkCount].y_f;
+		//			}
 
-				// if this distance is less than min distance,associate current particle with that landmark index
-					if (dist_euclid < min_dist)
-					{
-						min_dist = dist_euclid;
-						particles.at(ii).id = map_landmarks.landmark_list[landmarkCount].id_i;
-					}
+		//	}
 
-			}
+		//}
 
-		}
-
-	}
+	} // data association is done
 
 
 
