@@ -136,7 +136,7 @@ void ParticleFilter::dataAssociation(std::vector<LandmarkObs> predicted, std::ve
 
 void ParticleFilter::updateWeights(double sensor_range, double std_landmark[], 
 		std::vector<LandmarkObs> observations, Map map_landmarks) {
-	// TODO: Update the weights of each particle using a mult-variate Gaussian distribution. You can read
+	// TODO: Update the weights of each particle using a multi-variate Gaussian distribution. You can read
 	//   more about this distribution here: https://en.wikipedia.org/wiki/Multivariate_normal_distribution
 	// NOTE: The observations are given in the VEHICLE'S coordinate system. Your particles are located
 	//   according to the MAP'S coordinate system. You will need to transform between the two systems.
@@ -146,6 +146,43 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
 	//   and the following is a good resource for the actual equation to implement (look at equation 
 	//   3.33
 	//   http://planning.cs.uiuc.edu/node99.html
+
+	// Perform data association to associate each sensor measurement with a particular landmark index
+	
+	for (int ii = 0; ii < num_particles; ++ii)
+	{
+
+		for (int sensorCount = 0; sensorCount < observations.end; ++sensorCount)
+		{
+			// transform each sensor measurement ,which is in local(car) coordinates to global(map) coordinates
+
+
+			for (int landmarkCount = 0; landmarkCount < map_landmarks.landmark_list.end; ++landmarkCount)
+			{
+
+				// Calculate euclidean distance between each landmark pos and sensor pos
+
+
+
+				// if this distance is less than min distance,associate current particle with that landmark index
+
+
+			}
+
+
+
+		}
+
+	}
+
+
+
+
+
+
+
+
+
 }
 
 void ParticleFilter::resample() {
