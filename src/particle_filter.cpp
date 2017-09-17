@@ -175,13 +175,6 @@ void ParticleFilter::dataAssociation(std::vector<LandmarkObs> predicted, std::ve
 }
 
 
-
-
-
-
-
-
-
 void ParticleFilter::updateWeights(double sensor_range, double std_landmark[], 
 		std::vector<LandmarkObs> observations, Map map_landmarks) {
 	// TODO: Update the weights of each particle using a multi-variate Gaussian distribution. You can read
@@ -199,6 +192,23 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
 	
 	for (int ii = 0; ii < num_particles; ++ii)
 	{
+		// create a empty vector field predicted
+		std::vector<LandmarkObs> predicted; // probably have to initialzie it before.Let's see
+
+		// for each observation from sensor,convert it to map coordinates
+		for (int sensorCount = 0; sensorCount < observations.size(); ++sensorCount)
+		{
+			// use above equation for each sensor
+			observations[sensorCount].x = particles.at(ii).x + (cos(particles.at(ii).theta) * (observations[sensorCount].x)) - (sin(particles.at(ii).theta) * (observations[sensorCount].y));
+			observations[sensorCount].y = particles.at(ii).y + (sin(particles.at(ii).theta) * (observations[sensorCount].x)) + (cos(particles.at(ii).theta) * (observations[sensorCount].y));
+		}
+		
+		// apply data association for each sensor measurement and create a predicted vector for each sensor measurement
+		dataAssociation(predicted, observations, map_landmarks);
+
+
+
+
 
 		//for (int sensorCount = 0; sensorCount < observations.size(); ++sensorCount)
 		//{
