@@ -155,7 +155,16 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
 		for (int sensorCount = 0; sensorCount < observations.size(); ++sensorCount)
 		{
 			// transform each sensor measurement ,which is in local(car) coordinates to global(map) coordinates
-
+			/*
+			Equation to transform car coordinates to map coordinates
+			|Xmap| = |cos(theta)  -sin(theta)   Xparticle |      | Xcar |
+			|Ymap| = |sin(theta)   cos(theta)   Yparticle |   X  | Ycar |
+			|  1 | = |    0             0            1    |      |   1  |
+			
+			*/
+			// use above equation for each sensor
+			observations[sensorCount].x = particles.at(ii).x + (cos(particles.at(ii).theta) * (observations[sensorCount].x)) - (sin(particles.at(ii).theta) * (observations[sensorCount].y));
+			observations[sensorCount].y = particles.at(ii).y + (sin(particles.at(ii).theta) * (observations[sensorCount].x)) + (cos(particles.at(ii).theta) * (observations[sensorCount].y));
 
 			for (int landmarkCount = 0; landmarkCount < map_landmarks.landmark_list.size(); ++landmarkCount)
 			{
