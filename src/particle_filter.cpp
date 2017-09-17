@@ -152,12 +152,12 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
 	for (int ii = 0; ii < num_particles; ++ii)
 	{
 
-		for (int sensorCount = 0; sensorCount < observations.end; ++sensorCount)
+		for (int sensorCount = 0; sensorCount < observations.size(); ++sensorCount)
 		{
 			// transform each sensor measurement ,which is in local(car) coordinates to global(map) coordinates
 
 
-			for (int landmarkCount = 0; landmarkCount < map_landmarks.landmark_list.end; ++landmarkCount)
+			for (int landmarkCount = 0; landmarkCount < map_landmarks.landmark_list.size(); ++landmarkCount)
 			{
 
 				// Calculate euclidean distance between each landmark pos and sensor pos
