@@ -134,7 +134,7 @@ void ParticleFilter::prediction(double delta_t, double std_pos[], double velocit
 //
 //}
 
-void ParticleFilter::dataAssociation(std::vector<LandmarkObs> predicted, std::vector<LandmarkObs>& observations, Map map_landmarks)
+void ParticleFilter::dataAssociation(std::vector<LandmarkObs>& predicted, std::vector<LandmarkObs>& observations, Map map_landmarks)
 {
 
 	for (int sensorCount = 0; sensorCount < observations.size(); ++sensorCount)
@@ -198,7 +198,7 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
 		double weight_for_each_particle = 1.0;
 
 		// create a empty vector field predicted
-		std::vector<LandmarkObs> predicted; // probably have to initialize it before.Let's see
+		predicted.clear(); // probably have to initialize it before.Let's see
 
 		// for each observation from sensor,convert it to map coordinates
 		for (int sensorCount = 0; sensorCount < observations.size(); ++sensorCount)
@@ -238,10 +238,10 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
 			double gauss_norm = (1 / (2 * M_PI * std_landmark[0] * std_landmark[1]));
 
 			//calculate the exponent
-			double exponent = ((pow(predicted[ii].x - x_landmark,2))/(pow(std_landmark[0],2))) + 
-				((pow(predicted[ii].y - y_landmark, 2)) / (pow(std_landmark[1], 2)));
+			double exponent = ((pow(predicted[ii].x - x_landmark,2))/(2 * pow(std_landmark[0],2))) + 
+				((pow(predicted[ii].y - y_landmark, 2)) / (2 * pow(std_landmark[1], 2)));
 
-			 weight_for_each_particle = weight_for_each_particle * gauss_norm * exp(exponent);
+			 weight_for_each_particle = weight_for_each_particle * gauss_norm * exp(-exponent);
 
 		}
 
