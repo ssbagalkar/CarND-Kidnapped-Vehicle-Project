@@ -163,12 +163,13 @@ void ParticleFilter::dataAssociation(std::vector<LandmarkObs> predicted, std::ve
 
 			// if this distance is less than min distance,associate current particle with that landmark index
 			if (dist_euclid < min_dist)
-
+			{
 				// change the min distance to calculated euclidean distance  
 				min_dist = dist_euclid;
-				
+
 				// add the landmark index to predicted vector id
 				observations[sensorCount].id = map_landmarks.landmark_list[landmarkCount].id_i;
+			}
 
 		}
 
