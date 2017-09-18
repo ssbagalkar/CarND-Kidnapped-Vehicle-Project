@@ -163,8 +163,9 @@ void ParticleFilter::dataAssociation(std::vector<LandmarkObs> predicted, std::ve
 
 			// if this distance is less than min distance,associate current particle with that landmark index
 			if (dist_euclid < min_dist)
+
 				// change the min distance to calculated euclidean distance  
-				dist_euclid = min_dist;
+				min_dist = dist_euclid;
 				
 				// add the landmark index to predicted vector id
 				observations[sensorCount].id = map_landmarks.landmark_list[landmarkCount].id_i;
@@ -190,16 +191,25 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
 	//   3.33
 	//   http://planning.cs.uiuc.edu/node99.html
 	
-	// for each particle calculate the weight
+	// loop through each particle to calculate its weight 
 	for (int ii = 0; ii < num_particles; ++ii)
 	{
 		double weight_for_each_particle = 1.0;
+
 		// create a empty vector field predicted
 		std::vector<LandmarkObs> predicted; // probably have to initialize it before.Let's see
 
 		// for each observation from sensor,convert it to map coordinates
 		for (int sensorCount = 0; sensorCount < observations.size(); ++sensorCount)
 		{
+			// transform each sensor measurement ,which is in local(car) coordinates to global(map) coordinates
+			/*
+			//	Equation to transform car coordinates to map coordinates
+			//	|Xmap| = |cos(theta)  -sin(theta)   Xparticle |      | Xcar |
+			//	|Ymap| = |sin(theta)   cos(theta)   Yparticle |   X  | Ycar |
+			//	|  1 | = |    0             0            1    |      |   1  |
+			//	
+			//	*/
 			// use above equation for each sensor
 			observations[sensorCount].x = particles.at(ii).x + (cos(particles.at(ii).theta) * (observations[sensorCount].x)) - (sin(particles.at(ii).theta) * (observations[sensorCount].y));
 			observations[sensorCount].y = particles.at(ii).y + (sin(particles.at(ii).theta) * (observations[sensorCount].x)) + (cos(particles.at(ii).theta) * (observations[sensorCount].y));
