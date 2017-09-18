@@ -54,6 +54,11 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
 	// set initialized flag to true
 	is_initialized = true;
 
+	//Print out the initialized particles
+	cout << "Initial Particle : " << "x: " << x << endl;
+	cout << "y: " << y << endl;
+	cout << "theta: " << theta << endl;
+
 	// Print initialization
 	cout << "Initialization successful" << endl;
 
@@ -236,8 +241,8 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
 			int associated_index = predicted[ii].id;
 
 			// retrieve the x and y positions of the landmark
-			double x_landmark = map_landmarks.landmark_list[associated_index].x_f;
-			double y_landmark = map_landmarks.landmark_list[associated_index].y_f;
+			double x_landmark = map_landmarks.landmark_list[associated_index-1].x_f;
+			double y_landmark = map_landmarks.landmark_list[associated_index-1].y_f;
 
 			
 			// calculate normalizer
