@@ -158,8 +158,8 @@ void ParticleFilter::dataAssociation(std::vector<LandmarkObs> predicted, std::ve
 			// Calculate euclidean distance between each landmark pos and sensor pos
 			//double dist_euclid = sqrt(pow(map_landmarks.landmark_list[landmarkCount].x_f - observations[sensorCount].x, 2) + 
 			//					 pow(map_landmarks.landmark_list[landmarkCount].y_f - observations[sensorCount].y, 2));
-			double dist_euclid = dist(map_landmarks.landmark_list[landmarkCount].x_f, observations[sensorCount].x,
-				map_landmarks.landmark_list[landmarkCount].y_f, observations[sensorCount].x);
+			double dist_euclid = dist(map_landmarks.landmark_list[landmarkCount].x_f, map_landmarks.landmark_list[landmarkCount].y_f,
+				observations[sensorCount].x, observations[sensorCount].y);
 
 			// if this distance is less than min distance,associate current particle with that landmark index
 			if (dist_euclid < min_dist)
