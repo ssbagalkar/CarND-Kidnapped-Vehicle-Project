@@ -167,10 +167,10 @@ void ParticleFilter::dataAssociation(std::vector<LandmarkObs> predicted, std::ve
 				// add the landmark index to predicted vector id
 				observations[sensorCount].id = map_landmarks.landmark_list[landmarkCount].id_i;
 
-				// now add the sensor measurement with its associated id to predicted vector
-				predicted.push_back(observations[sensorCount]);
-
 		}
+
+		// now add the sensor measurement with its associated id to predicted vector
+		predicted.push_back(observations[sensorCount]);
 	}
 }
 
@@ -187,13 +187,13 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
 	//   and the following is a good resource for the actual equation to implement (look at equation 
 	//   3.33
 	//   http://planning.cs.uiuc.edu/node99.html
-
-	// Perform data association to associate each sensor measurement with a particular landmark index
 	
+	// for each particle calculate the weight
 	for (int ii = 0; ii < num_particles; ++ii)
 	{
+		double weight_for_each_particle = 1.0;
 		// create a empty vector field predicted
-		std::vector<LandmarkObs> predicted; // probably have to initialzie it before.Let's see
+		std::vector<LandmarkObs> predicted; // probably have to initialize it before.Let's see
 
 		// for each observation from sensor,convert it to map coordinates
 		for (int sensorCount = 0; sensorCount < observations.size(); ++sensorCount)
@@ -206,54 +206,36 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
 		// apply data association for each sensor measurement and create a predicted vector for each sensor measurement
 		dataAssociation(predicted, observations, map_landmarks);
 
+		// calculate weight using multivariate gaussian probability distribution
+		for (int ii = 0; ii < observations.size(); ++ii)
+		{
+			/* start process of assigning weights to each particle 
+			using multivariate gaussian probability distribution*/
 
+			// retrieve landmark x and y position associated with ith sensor 
+			// measurement based on the index that is stored in predicted vector
+			int associated_index = predicted[ii].id;
 
+			// retrieve the x and y positions of the landmark
+			double x_landmark = map_landmarks.landmark_list[associated_index].x_f;
+			double y_landmark = map_landmarks.landmark_list[associated_index].y_f;
 
+			
+			// calculate normalizer
+			double gauss_norm = (1 / (2 * M_PI * std_landmark[0] * std_landmark[1]));
 
-		//for (int sensorCount = 0; sensorCount < observations.size(); ++sensorCount)
-		//{
-		//	double min_dist = 1000000;
-		//	// transform each sensor measurement ,which is in local(car) coordinates to global(map) coordinates
-		//	/*
-		//	Equation to transform car coordinates to map coordinates
-		//	|Xmap| = |cos(theta)  -sin(theta)   Xparticle |      | Xcar |
-		//	|Ymap| = |sin(theta)   cos(theta)   Yparticle |   X  | Ycar |
-		//	|  1 | = |    0             0            1    |      |   1  |
-		//	
-		//	*/
-		//	// use above equation for each sensor
-		//	observations[sensorCount].x = particles.at(ii).x + (cos(particles.at(ii).theta) * (observations[sensorCount].x)) - (sin(particles.at(ii).theta) * (observations[sensorCount].y));
-		//	observations[sensorCount].y = particles.at(ii).y + (sin(particles.at(ii).theta) * (observations[sensorCount].x)) + (cos(particles.at(ii).theta) * (observations[sensorCount].y));
+			//calculate the exponent
+			double exponent = ((pow(predicted[ii].x - x_landmark,2))/(pow(std_landmark[0],2))) + 
+				((pow(predicted[ii].y - y_landmark, 2)) / (pow(std_landmark[1], 2)));
 
-		//	for (int landmarkCount = 0; landmarkCount < map_landmarks.landmark_list.size(); ++landmarkCount)
-		//	{
+			 weight_for_each_particle = weight_for_each_particle * gauss_norm * exp(exponent);
 
-		//		// Calculate euclidean distance between each landmark pos and sensor pos
-		//		double dist_euclid = sqrt(pow(map_landmarks.landmark_list[landmarkCount].x_f - observations[sensorCount].x, 2) + pow(map_landmarks.landmark_list[landmarkCount].y_f - observations[sensorCount].y, 2));
-		//		
+		}
 
-		//		// if this distance is less than min distance,associate current particle with that landmark index
-		//			if (dist_euclid < min_dist)
-		//			{
-		//				min_dist = dist_euclid;
-		//				particles.at(ii).id = map_landmarks.landmark_list[landmarkCount].id_i;
-		//				particles.at(ii).x = map_landmarks.landmark_list[landmarkCount].x_f;
-		//				particles.at(ii).y = map_landmarks.landmark_list[landmarkCount].y_f;
-		//			}
+		weights.push_back(weight_for_each_particle);
+	} 
 
-		//	}
-
-		//}
-
-	} // data association is done
-
-
-
-
-
-
-
-
+	
 
 }
 
