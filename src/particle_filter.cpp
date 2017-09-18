@@ -55,7 +55,7 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
 	is_initialized = true;
 
 	// Print initialization
-	cout << "Initialization" << endl;
+	cout << "Initialization successful" << endl;
 
 }
 
@@ -203,6 +203,9 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
 		// create a empty vector field predicted
 		predicted.clear(); // probably have to initialize it before.Let's see
 
+		// set size of transformed observations vector
+		transformed_obs.resize(observations.size());
+
 		// for each observation from sensor,convert it to map coordinates
 		for (int sensorCount = 0; sensorCount < observations.size(); ++sensorCount)
 		{
@@ -215,12 +218,12 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
 			//	
 			//	*/
 			// use above equation for each sensor to transform observations
-			observations[sensorCount].x = particles.at(ii).x + (cos(particles.at(ii).theta) * (observations[sensorCount].x)) - (sin(particles.at(ii).theta) * (observations[sensorCount].y));
-			observations[sensorCount].y = particles.at(ii).y + (sin(particles.at(ii).theta) * (observations[sensorCount].x)) + (cos(particles.at(ii).theta) * (observations[sensorCount].y));
+			transformed_obs[sensorCount].x = particles.at(ii).x + (cos(particles.at(ii).theta) * (observations[sensorCount].x)) - (sin(particles.at(ii).theta) * (observations[sensorCount].y));
+			transformed_obs[sensorCount].y = particles.at(ii).y + (sin(particles.at(ii).theta) * (observations[sensorCount].x)) + (cos(particles.at(ii).theta) * (observations[sensorCount].y));
 		}
 		
 		// apply data association for each sensor measurement and create a predicted vector for each sensor measurement
-		dataAssociation(predicted, observations, map_landmarks);
+		dataAssociation(predicted, transformed_obs, map_landmarks);
 
 		// calculate weight using multivariate gaussian probability distribution
 		for (int ii = 0; ii < observations.size(); ++ii)

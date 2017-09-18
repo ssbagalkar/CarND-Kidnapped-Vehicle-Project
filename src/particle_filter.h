@@ -45,8 +45,11 @@ public:
 	// Set of current particles
 	std::vector<Particle> particles;
 
-	// set the predicted vector
+	// Set the predicted vector
 	std::vector <LandmarkObs> predicted;
+
+	// Set a vector of transformed observations
+	std::vector <LandmarkObs> transformed_obs;
 
 	// Constructor
 	// @param num_particles Number of particles
