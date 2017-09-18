@@ -51,8 +51,11 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
 		particles.at(ii).weight = 1.0;
 	}
 
-// set initialized flag to true
+	// set initialized flag to true
 	is_initialized = true;
+
+	// Print initialization
+	cout << "Initialization" << endl;
 
 }
 
@@ -211,7 +214,7 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
 			//	|  1 | = |    0             0            1    |      |   1  |
 			//	
 			//	*/
-			// use above equation for each sensor
+			// use above equation for each sensor to transform observations
 			observations[sensorCount].x = particles.at(ii).x + (cos(particles.at(ii).theta) * (observations[sensorCount].x)) - (sin(particles.at(ii).theta) * (observations[sensorCount].y));
 			observations[sensorCount].y = particles.at(ii).y + (sin(particles.at(ii).theta) * (observations[sensorCount].x)) + (cos(particles.at(ii).theta) * (observations[sensorCount].y));
 		}
@@ -245,6 +248,7 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
 
 		}
 
+		particles.at(ii).weight = weight_for_each_particle;
 		weights.push_back(weight_for_each_particle);
 	} 
 
