@@ -162,6 +162,7 @@ void ParticleFilter::dataAssociation(std::vector<LandmarkObs>& predicted, std::v
 
 		for (int landmarkCount = 0; landmarkCount < map_landmarks.landmark_list.size(); ++landmarkCount)
 		{
+			// TODO## restrict far away landmarks suing sensor range
 
 			// Calculate euclidean distance between each landmark pos and sensor pos
 			//double dist_euclid = sqrt(pow(map_landmarks.landmark_list[landmarkCount].x_f - observations[sensorCount].x, 2) + 
@@ -257,7 +258,7 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
 		}
 
 		particles.at(ii).weight = weight_for_each_particle;
-		weights.push_back(weight_for_each_particle);
+		weights.at(ii) = weight_for_each_particle;
 	} 
 
 	
