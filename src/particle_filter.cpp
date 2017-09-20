@@ -14,6 +14,7 @@
 #include <sstream>
 #include <string>
 #include <iterator>
+#include <map>
 
 #include "particle_filter.h"
 
@@ -32,6 +33,7 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
 
 	//decide on number of particles
 	num_particles = 100; //start with 100.Later maybe adjusted
+	
 	
 	//set length of weights to num_particles
 	weights.resize(num_particles);
@@ -269,6 +271,23 @@ void ParticleFilter::resample() {
 	// TODO: Resample particles with replacement with probability proportional to their weight. 
 	// NOTE: You may find std::discrete_distribution helpful here.
 	//   http://en.cppreference.com/w/cpp/numeric/random/discrete_distribution
+
+	std::random_device rd;
+	std::mt19937 gen(rd());
+	std::discrete_distribution<> d(weights.begin(), weights.end());
+	std::map<int, int> m;
+	for (int n = 0; n<num_particles; ++n) {
+		resampled_particles.push_back(particles[d(gen)]);
+	}
+
+	particles.clear();
+	for (int ii = 0; ii < num_particles; ++ii)
+	{
+		particles.at(ii).x = resampled_particles.at(ii).x;
+		particles.at(ii).y = resampled_particles.at(ii).y;
+		particles.at(ii).theta = resampled_particles.at(ii).theta;
+		particles.at(ii).weight = 1;
+	}
 
 }
 

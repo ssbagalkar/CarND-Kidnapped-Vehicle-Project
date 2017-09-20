@@ -51,6 +51,9 @@ public:
 	// Set a vector of transformed observations
 	std::vector <LandmarkObs> transformed_obs;
 
+	// resampled particles
+	std::vector <Particle> resampled_particles;
+
 	// Constructor
 	// @param num_particles Number of particles
 	ParticleFilter() : num_particles(0), is_initialized(false) {}
