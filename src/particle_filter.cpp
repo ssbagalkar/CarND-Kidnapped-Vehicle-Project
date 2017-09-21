@@ -32,7 +32,7 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
 	normal_distribution <double> dist_theta (theta, std[2]);
 
 	//decide on number of particles
-	num_particles = 100; //start with 100.Later maybe adjusted
+	num_particles = 5; //start with 100.Later maybe adjusted
 	
 	
 	//set length of weights to num_particles
@@ -78,26 +78,26 @@ void ParticleFilter::prediction(double delta_t, double std_pos[], double velocit
 	// depending if yaw rate is zero,use different set of equations to predict the x,y positions
 	// and heading angle which is yaw angle theta
 	for (int ii = 0; ii < num_particles; ++ii) {
-		if (yaw_rate != 0)
+		if (fabs(yaw_rate) < 0.0000001)
 		{
 			// x_pred = x_prev + velocity * delta_t * cos (theta)
 			double x_pred = particles.at(ii).x + (velocity * delta_t * cos(particles.at(ii).theta));
 
 			// add random gaussian noise for x position
-			normal_distribution <double> dist_x_pred(x_pred, std_pos[0]);
+			normal_distribution <double> dist_x_pred(0, std_pos[0]);
 
 			// assign the predicted measurement to x position with added random gaussian noise
-			particles.at(ii).x = dist_x_pred(gen);
+			particles.at(ii).x = x_pred + dist_x_pred(gen);
 
 			// y_pred = x_prev + velocity * delta_t * sin (theta)
 			double y_pred = particles.at(ii).y + (velocity * delta_t * sin(particles.at(ii).theta));
 
 			// add random gaussian noise for x position
-			normal_distribution <double> dist_y_pred(y_pred, std_pos[1]);
+			normal_distribution <double> dist_y_pred(0, std_pos[1]);
 
 			// assign the predicted measurement to x position with added random gaussian noise
-			particles.at(ii).y = dist_y_pred(gen);
-
+			particles.at(ii).y = y_pred +  dist_y_pred(gen);
+			
 			//theta_pred = theta_prev.So,no need to change the equation
 		}
 		// if yaw rate is not equal to 0
@@ -107,28 +107,30 @@ void ParticleFilter::prediction(double delta_t, double std_pos[], double velocit
 			double x_pred = particles.at(ii).x + (velocity/yaw_rate)*(sin((particles.at(ii).theta) + (yaw_rate * delta_t)) - (sin(particles.at(ii).theta)));
 
 			// add random gaussian noise for x position
-			normal_distribution <double> dist_x_pred(x_pred, std_pos[0]);
+			normal_distribution <double> dist_x_pred(0, std_pos[0]);
 
+			//cout << "normal random noise" << dist_x_pred(gen) << endl;
 			// assign the predicted measurement to x position with added random gaussian noise
-			particles.at(ii).x = dist_x_pred(gen);
-
+			particles.at(ii).x = x_pred + dist_x_pred(gen);
 			// y_pred = x_prev + velocity * delta_t * sin (theta)
 			double y_pred = particles.at(ii).y + (velocity / yaw_rate)*((cos(particles.at(ii).theta)) - (cos(particles.at(ii).theta + (yaw_rate * delta_t))));
 
 			// add random gaussian noise for x position
-			normal_distribution <double> dist_y_pred(y_pred, std_pos[1]);
+			normal_distribution <double> dist_y_pred(0, std_pos[1]);
 
+			
 			// assign the predicted measurement to x position with added random gaussian noise
-			particles.at(ii).y = dist_y_pred(gen);
-
+			particles.at(ii).y = y_pred +  dist_y_pred(gen);
+			
 			// theta_pred = theta_prev + yaw_rate * delta_t
 			double theta_pred = particles.at(ii).theta + ((yaw_rate * delta_t));
 
 			// add random gaussian noise for theta 
-			normal_distribution <double> dist_theta_pred(theta_pred, std_pos[2]);
+			normal_distribution <double> dist_theta_pred(0, std_pos[2]);
 
 			// assign the predicted measurement to x position with added random gaussian noise
-			particles.at(ii).theta = dist_theta_pred(gen);
+			particles.at(ii).theta = theta_pred + dist_theta_pred(gen);
+			
 
 		}
 	}
@@ -213,7 +215,7 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
 
 		// set size of transformed observations vector
 		transformed_obs.resize(observations.size());
-
+		cout << "Transformations" << endl;
 		// for each observation from sensor,convert it to map coordinates
 		for (int sensorCount = 0; sensorCount < observations.size(); ++sensorCount)
 		{
@@ -228,6 +230,9 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
 			// use above equation for each sensor to transform observations
 			transformed_obs[sensorCount].x = particles.at(ii).x + (cos(particles.at(ii).theta) * (observations[sensorCount].x)) - (sin(particles.at(ii).theta) * (observations[sensorCount].y));
 			transformed_obs[sensorCount].y = particles.at(ii).y + (sin(particles.at(ii).theta) * (observations[sensorCount].x)) + (cos(particles.at(ii).theta) * (observations[sensorCount].y));
+
+			cout << "observation: (" << observations[sensorCount].x <<" " << observations[sensorCount].y << ") --->" <<
+				"transfomed_obs: (" << transformed_obs[sensorCount].x << " " << transformed_obs[sensorCount].y << ")" << endl;
 		}
 		
 		// apply data association for each sensor measurement and create a predicted vector for each sensor measurement
@@ -280,13 +285,14 @@ void ParticleFilter::resample() {
 		resampled_particles.push_back(particles[d(gen)]);
 	}
 
-	particles.clear();
+	// clear all particles and replace with resampled ones
+	//particles.erase(particles.begin(),particles.end());
 	for (int ii = 0; ii < num_particles; ++ii)
 	{
 		particles.at(ii).x = resampled_particles.at(ii).x;
 		particles.at(ii).y = resampled_particles.at(ii).y;
 		particles.at(ii).theta = resampled_particles.at(ii).theta;
-		particles.at(ii).weight = 1;
+		particles.at(ii).weight = resampled_particles.at(ii).weight;
 	}
 
 }
