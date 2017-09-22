@@ -300,9 +300,11 @@ void ParticleFilter::resample() {
 
 	// clear all particles and replace with resampled ones
 	//particles.erase(particles.begin(),particles.end());
-	cout << "resampled particles:" << endl;
-	
 	particles = resampled_particles;
+	cout << "resampled particles:" << endl;
+	cout << "resampled_x : " << resampled_particles[0].x << endl;
+	cout << "resampled_y : " << resampled_particles[1].y<< endl;
+	
 
 	
 }
