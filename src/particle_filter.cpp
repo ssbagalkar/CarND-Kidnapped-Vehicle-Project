@@ -32,7 +32,7 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
 	normal_distribution <double> dist_theta (theta, std[2]);
 
 	//decide on number of particles
-	num_particles = 1; //start with 100.Later maybe adjusted
+	num_particles = 100; //start with 100.Later maybe adjusted
 	
 	
 	//set length of weights to num_particles
@@ -57,12 +57,12 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
 	is_initialized = true;
 
 	//Print out the initialized particles
-	cout << "Initial Particle : " << "x: " << particles.at(0).x << endl;
-	cout << "y: " << particles.at(0).y << endl;
-	cout << "theta: " << particles.at(0).theta << endl;
+	//cout << "Initial Particle : " << "x: " << particles.at(0).x << endl;
+	//cout << "y: " << particles.at(0).y << endl;
+	//cout << "theta: " << particles.at(0).theta << endl;
 
 	// Print initialization
-	cout << "Initialization successful" << endl;
+	//cout << "Initialization successful" << endl;
 
 }
 
@@ -131,10 +131,10 @@ void ParticleFilter::prediction(double delta_t, double std_pos[], double velocit
 			// assign the predicted measurement to x position with added random gaussian noise
 			particles.at(ii).theta = theta_pred + dist_theta_pred(gen);
 			
-			cout << "Prediction : " << endl;
-			cout << "x :" << particles.at(ii).x << endl;
-			cout << "y : " << particles.at(ii).y << endl;
-			cout << "theta : " << particles.at(ii).theta << endl;
+			//cout << "Prediction : " << endl;
+			//cout << "x :" << particles.at(ii).x << endl;
+			//cout << "y : " << particles.at(ii).y << endl;
+			//cout << "theta : " << particles.at(ii).theta << endl;
 		}
 	}
 	
@@ -188,10 +188,10 @@ void ParticleFilter::dataAssociation(std::vector<LandmarkObs>& predicted, std::v
 			}
 
 		}
-		cout << "transf_obs ( " << observations[sensorCount].x << " " << observations[sensorCount].y << "--->"
-			<< "landmark position : ( " << map_landmarks.landmark_list[observations[sensorCount].id-1].x_f << " " <<	
-			map_landmarks.landmark_list[observations[sensorCount].id-1].y_f << " )" << " " << "ID: " << 
-			observations[sensorCount].id << endl;
+		//cout << "transf_obs ( " << observations[sensorCount].x << " " << observations[sensorCount].y << "--->"
+		//	<< "landmark position : ( " << map_landmarks.landmark_list[observations[sensorCount].id-1].x_f << " " <<	
+		//	map_landmarks.landmark_list[observations[sensorCount].id-1].y_f << " )" << " " << "ID: " << 
+			//observations[sensorCount].id << endl;
 		// now add the sensor measurement with its associated id to predicted vector
 		predicted.push_back(observations[sensorCount]);
 	}
@@ -221,7 +221,7 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
 
 		// set size of transformed observations vector
 		transformed_obs.resize(observations.size());
-		cout << "Transformations :" << endl;
+		//cout << "Transformations :" << endl;
 		// for each observation from sensor,convert it to map coordinates
 		for (int sensorCount = 0; sensorCount < observations.size(); ++sensorCount)
 		{
@@ -237,11 +237,11 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
 			transformed_obs[sensorCount].x = particles.at(ii).x + (cos(particles.at(ii).theta) * (observations[sensorCount].x)) - (sin(particles.at(ii).theta) * (observations[sensorCount].y));
 			transformed_obs[sensorCount].y = particles.at(ii).y + (sin(particles.at(ii).theta) * (observations[sensorCount].x)) + (cos(particles.at(ii).theta) * (observations[sensorCount].y));
 
-			cout << "observation: (" << observations[sensorCount].x <<" " << observations[sensorCount].y << ") --->" <<
-				"transfomed_obs: (" << transformed_obs[sensorCount].x << " " << transformed_obs[sensorCount].y << ")" << endl;
+			//cout << "observation: (" << observations[sensorCount].x <<" " << observations[sensorCount].y << ") --->" <<
+			//	"transfomed_obs: (" << transformed_obs[sensorCount].x << " " << transformed_obs[sensorCount].y << ")" << endl;
 		}
 		
-		cout << "Data associations :" << endl;
+		//cout << "Data associations :" << endl;
 		// apply data association for each sensor measurement and create a predicted vector for each sensor measurement
 		dataAssociation(predicted, transformed_obs, map_landmarks);
 
@@ -276,8 +276,8 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
 
 		particles.at(ii).weight = weight_for_each_particle;
 		weights.at(ii) = weight_for_each_particle;
-		cout << "Weights:" << endl;
-		cout << "Weight of particle :" << weights.at(ii) << endl;
+	//	cout << "Weights:" << endl;
+		//cout << "Weight of particle :" << weights.at(ii) << endl;
 	} 
 
 	
@@ -301,12 +301,13 @@ void ParticleFilter::resample() {
 	// clear all particles and replace with resampled ones
 	//particles.erase(particles.begin(),particles.end());
 	particles = resampled_particles;
-	cout << "resampled particles:" << endl;
-	cout << "resampled_x : " << resampled_particles[0].x << endl;
-	cout << "resampled_y : " << resampled_particles[0].y<< endl;
+	//cout << "resampled particles:" << endl;
+	//cout << "resampled_x : " << resampled_particles[0].x << endl;
+	//cout << "resampled_y : " << resampled_particles[0].y<< endl;
 	
 
-	weights.clear();
+	//weights.clear();
+
 }
 
 Particle ParticleFilter::SetAssociations(Particle particle, std::vector<int> associations, std::vector<double> sense_x, std::vector<double> sense_y)
