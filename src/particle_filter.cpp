@@ -59,7 +59,7 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
 	//Print out the initialized particles
 	cout << "Initial Particle : " << "x: " << particles.at(0).x << endl;
 	cout << "y: " << particles.at(0).y << endl;
-	cout << "theta: " << theta << endl;
+	cout << "theta: " << particles.at(0).theta << endl;
 
 	// Print initialization
 	cout << "Initialization successful" << endl;
