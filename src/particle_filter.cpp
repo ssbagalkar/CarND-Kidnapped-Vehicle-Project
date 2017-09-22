@@ -57,8 +57,8 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
 	is_initialized = true;
 
 	//Print out the initialized particles
-	cout << "Initial Particle : " << "x: " << x << endl;
-	cout << "y: " << y << endl;
+	cout << "Initial Particle : " << "x: " << particles.at(0).x << endl;
+	cout << "y: " << particles.at(0).y << endl;
 	cout << "theta: " << theta << endl;
 
 	// Print initialization
@@ -303,10 +303,10 @@ void ParticleFilter::resample() {
 	particles = resampled_particles;
 	cout << "resampled particles:" << endl;
 	cout << "resampled_x : " << resampled_particles[0].x << endl;
-	cout << "resampled_y : " << resampled_particles[1].y<< endl;
+	cout << "resampled_y : " << resampled_particles[0].y<< endl;
 	
 
-	
+	weights.clear();
 }
 
 Particle ParticleFilter::SetAssociations(Particle particle, std::vector<int> associations, std::vector<double> sense_x, std::vector<double> sense_y)
