@@ -32,7 +32,7 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
 	normal_distribution <double> dist_theta (theta, std[2]);
 
 	//decide on number of particles
-	num_particles = 5; //start with 100.Later maybe adjusted
+	num_particles = 1; //start with 100.Later maybe adjusted
 	
 	
 	//set length of weights to num_particles
@@ -131,7 +131,10 @@ void ParticleFilter::prediction(double delta_t, double std_pos[], double velocit
 			// assign the predicted measurement to x position with added random gaussian noise
 			particles.at(ii).theta = theta_pred + dist_theta_pred(gen);
 			
-
+			cout << "Prediction : " << endl;
+			cout << "x :" << particles.at(ii).x << endl;
+			cout << "y : " << particles.at(ii).y << endl;
+			cout << "theta : " << particles.at(ii).theta << endl;
 		}
 	}
 	
@@ -185,7 +188,10 @@ void ParticleFilter::dataAssociation(std::vector<LandmarkObs>& predicted, std::v
 			}
 
 		}
-
+		cout << "transf_obs ( " << observations[sensorCount].x << " " << observations[sensorCount].y << "--->"
+			<< "landmark position : ( " << map_landmarks.landmark_list[observations[sensorCount].id-1].x_f << " " <<	
+			map_landmarks.landmark_list[observations[sensorCount].id-1].y_f << " )" << " " << "ID: " << 
+			observations[sensorCount].id << endl;
 		// now add the sensor measurement with its associated id to predicted vector
 		predicted.push_back(observations[sensorCount]);
 	}
@@ -215,7 +221,7 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
 
 		// set size of transformed observations vector
 		transformed_obs.resize(observations.size());
-		cout << "Transformations" << endl;
+		cout << "Transformations :" << endl;
 		// for each observation from sensor,convert it to map coordinates
 		for (int sensorCount = 0; sensorCount < observations.size(); ++sensorCount)
 		{
@@ -235,8 +241,12 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
 				"transfomed_obs: (" << transformed_obs[sensorCount].x << " " << transformed_obs[sensorCount].y << ")" << endl;
 		}
 		
+		cout << "Data associations :" << endl;
 		// apply data association for each sensor measurement and create a predicted vector for each sensor measurement
 		dataAssociation(predicted, transformed_obs, map_landmarks);
+
+		
+		
 
 		// calculate weight using multivariate gaussian probability distribution
 		for (int ii = 0; ii < observations.size(); ++ii)
@@ -266,8 +276,11 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
 
 		particles.at(ii).weight = weight_for_each_particle;
 		weights.at(ii) = weight_for_each_particle;
+		cout << "Weights:" << endl;
+		cout << "Weight of particle :" << weights.at(ii) << endl;
 	} 
 
+	
 	
 
 }
@@ -276,7 +289,7 @@ void ParticleFilter::resample() {
 	// TODO: Resample particles with replacement with probability proportional to their weight. 
 	// NOTE: You may find std::discrete_distribution helpful here.
 	//   http://en.cppreference.com/w/cpp/numeric/random/discrete_distribution
-
+	resampled_particles.clear();
 	std::random_device rd;
 	std::mt19937 gen(rd());
 	std::discrete_distribution<> d(weights.begin(), weights.end());
@@ -287,14 +300,11 @@ void ParticleFilter::resample() {
 
 	// clear all particles and replace with resampled ones
 	//particles.erase(particles.begin(),particles.end());
-	for (int ii = 0; ii < num_particles; ++ii)
-	{
-		particles.at(ii).x = resampled_particles.at(ii).x;
-		particles.at(ii).y = resampled_particles.at(ii).y;
-		particles.at(ii).theta = resampled_particles.at(ii).theta;
-		particles.at(ii).weight = resampled_particles.at(ii).weight;
-	}
+	cout << "resampled particles:" << endl;
+	
+	particles = resampled_particles;
 
+	
 }
 
 Particle ParticleFilter::SetAssociations(Particle particle, std::vector<int> associations, std::vector<double> sense_x, std::vector<double> sense_y)
